@@ -26,7 +26,7 @@ Pour installer cette application sur votre ordinateur, suivez ces étapes :
    ```bash
    npm run dev
    
-## Colleciton insomnia
+## Collection insomnia
 
 Vous trouverez une collection insomnia à la racine en JSON qui vous permettra d'avoir toutes les routes.
 

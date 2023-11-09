@@ -9,7 +9,7 @@ Pour installer cette application sur votre ordinateur, suivez ces étapes :
 1. Clonez le projet depuis GitHub :
 
    ```bash
-   git clone https://github.com/yohannkipfer/meteo-react-ts
+   git clone https://github.com/YohannKIPFER/express-node-blog
 
 2. Installer les dépendances (node v14.18.3)
 

@@ -8,6 +8,7 @@ import slugify from 'slugify';
 import { Container } from 'typedi';
 import { CategoryService } from './categories.service';
 import { MediaService } from './medias.service';
+import { User } from '@interfaces/users.interface';
 
 @Service()
 export class ArticleService {
@@ -47,13 +48,81 @@ export class ArticleService {
     return articleData;
   }
 
-  public async findAllArticles(): Promise<Article[]> {
-    const allArticle: Article[] = await this.article.findMany();
-    return Promise.all(allArticle.map(async article => await this.formatArticle(article)));
+  public async findAllAdminArticles(search: string, page: number, itemPerPage: number, status: string): Promise<Article[]> {
+    let skip = 0;
+    if (page > 1) {
+      skip = (page - 1) * itemPerPage;
+    }
+
+    const take = Number(itemPerPage);
+
+    const allArticle: Article[] = await this.article.findMany({
+      skip,
+      take,
+      where: {
+        ...(status ? { status } : {}),
+        title: {
+          contains: search,
+        },
+      },
+    });
+
+    const nbArticleTotal = await this.article.count({
+      where: {
+        ...(status ? { status } : {}),
+        title: {
+          contains: search,
+        },
+      },
+    });
+
+    const articles = await Promise.all(allArticle.map(async article => await this.formatArticle(article)));
+
+    return { nbArticleTotal, articles };
   }
 
-  public async findArticleBySlug(slug: string): Promise<Article> {
-    const findArticle: Article = await this.article.findUnique({ where: { slug: slug } });
+  public async findAllArticles(search: string, page: number, itemPerPage: number): Promise<Article[]> {
+    let skip = 0;
+    if (page > 1) {
+      skip = (page - 1) * itemPerPage;
+    }
+
+    const take = Number(itemPerPage);
+
+    const allArticle: Article[] = await this.article.findMany({
+      skip,
+      take,
+      where: {
+        status: 'published',
+        title: {
+          contains: search,
+        },
+      },
+    });
+
+    const nbArticleTotal = await this.article.count({
+      where: {
+        status: 'published',
+        title: {
+          contains: search,
+        },
+      },
+    });
+
+    const articles = await Promise.all(allArticle.map(async article => await this.formatArticle(article)));
+
+    return { nbArticleTotal, articles };
+  }
+
+  public async findArticleBySlug(slug: string, user: User): Promise<Article> {
+    const findArticle: Article = await this.article.findFirst({ where: { slug: slug, ...(!user ? { status: 'published' } : {}) } });
+    if (!findArticle) throw new HttpException(409, "Article doesn't exist");
+
+    return await this.formatArticle(findArticle);
+  }
+
+  public async findArticleById(articleId: number): Promise<Article> {
+    const findArticle: Article = await this.article.findUnique({ where: { id: articleId } });
     if (!findArticle) throw new HttpException(409, "Article doesn't exist");
 
     return await this.formatArticle(findArticle);

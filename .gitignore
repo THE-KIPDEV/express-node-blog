@@ -126,3 +126,10 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# files
+public/document/*
+public/image/*
+
+private/document/*
+private/image/*

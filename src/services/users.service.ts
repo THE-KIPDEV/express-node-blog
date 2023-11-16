@@ -4,6 +4,7 @@ import { Service } from 'typedi';
 import { CreateUserDto } from '@dtos/users.dto';
 import { HttpException } from '@/exceptions/httpException';
 import { User } from '@interfaces/users.interface';
+import { CreateAdminDto } from '../dtos/admin.dto';
 
 @Service()
 export class UserService {
@@ -28,6 +29,14 @@ export class UserService {
     const hashedPassword = await hash(userData.password, 10);
     const createUserData: User = await this.user.create({ data: { ...userData, password: hashedPassword } });
     return createUserData;
+  }
+
+  public async createAdmin(userData: CreateAdminDto): Promise<User> {
+    const findUser: User = await this.user.findUnique({ where: { id: userData.user_id } });
+    if (!findUser) throw new HttpException(404, `This user ${userData.user_id} doesn't exist`);
+
+    const updateUserData = await this.user.update({ where: { id: userData.user_id }, data: { role: 'admin' } });
+    return updateUserData;
   }
 
   public async updateUser(userId: number, userData: CreateUserDto): Promise<User> {

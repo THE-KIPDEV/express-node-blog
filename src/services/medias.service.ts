@@ -55,6 +55,16 @@ export class MediaService {
     const mediaName = uuid();
     const path = `./${mediaData.security}/${mediaData.type}`;
 
+    if (user && user.role === 'user') {
+      const findsMediaUser = await this.media.findMany({ where: { created_by: user.id } });
+
+      if (findsMediaUser.length > 5) {
+        throw new HttpException(403, 'You have reached the limit of 5 media');
+      }
+    }
+
+    if (user.role !== 'admin' && mediaData.security === 'private') throw new HttpException(403, 'You are not allowed to create private media');
+
     if (mediaData.type === 'image') {
       const buffer = Buffer.from(mediaData.file, 'base64');
 

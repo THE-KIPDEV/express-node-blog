@@ -8,7 +8,19 @@ export class ArticleController {
 
   public getArticles = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const findAllArticles: Article[] = await this.article.findAllArticles();
+      const { page, itemPerPage, search } = req.query;
+      const findAllArticles: Article[] = await this.article.findAllArticles(search, page, itemPerPage);
+
+      res.status(200).json({ data: findAllArticles, message: 'findAll' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getAdminArticles = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { page, itemPerPage, search, status } = req.query;
+      const findAllArticles: Article[] = await this.article.findAllAdminArticles(search, page, itemPerPage, status);
 
       res.status(200).json({ data: findAllArticles, message: 'findAll' });
     } catch (error) {
@@ -19,7 +31,7 @@ export class ArticleController {
   public getArticleBySlug = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const articleSlug = String(req.params.slug);
-      const findOneArticle: Article = await this.article.findArticleBySlug(articleSlug);
+      const findOneArticle: Article = await this.article.findArticleBySlug(articleSlug, req.user);
 
       res.status(200).json({ data: findOneArticle, message: 'findOne' });
     } catch (error) {

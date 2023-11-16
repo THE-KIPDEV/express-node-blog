@@ -4,6 +4,7 @@ import { CreateCategoryDto } from '@dtos/categories.dto';
 import { Routes } from '@interfaces/routes.interface';
 import { ValidationMiddleware } from '@middlewares/validation.middleware';
 import { AuthMiddleware } from '../middlewares/auth.middleware';
+import { AdminMiddleware } from '../middlewares/admin.middleware';
 
 export class CategoryRoute implements Routes {
   public path = '/categories';
@@ -17,8 +18,8 @@ export class CategoryRoute implements Routes {
   private initializeRoutes() {
     this.router.get(`${this.path}`, this.category.getCategories);
     this.router.get(`${this.path}/:id`, this.category.getCategoryById);
-    this.router.post(`${this.path}`, AuthMiddleware, ValidationMiddleware(CreateCategoryDto), this.category.createCategory);
-    this.router.put(`${this.path}/:id(\\d+)`, AuthMiddleware, ValidationMiddleware(CreateCategoryDto, true), this.category.updateCategory);
-    this.router.delete(`${this.path}/:id(\\d+)`, AuthMiddleware, this.category.deleteCategory);
+    this.router.post(`${this.path}`, AdminMiddleware, ValidationMiddleware(CreateCategoryDto), this.category.createCategory);
+    this.router.put(`${this.path}/:id(\\d+)`, AdminMiddleware, ValidationMiddleware(CreateCategoryDto, true), this.category.updateCategory);
+    this.router.delete(`${this.path}/:id(\\d+)`, AdminMiddleware, this.category.deleteCategory);
   }
 }

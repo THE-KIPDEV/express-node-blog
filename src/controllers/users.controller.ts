@@ -27,6 +27,17 @@ export class UserController {
     }
   };
 
+  public createAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userData: User = req.body;
+      const createUserData: User = await this.user.createAdmin(userData);
+
+      res.status(201).json({ data: createUserData, message: 'created' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userData: User = req.body;

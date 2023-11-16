@@ -18,7 +18,10 @@ model User {
   last_name  String
   created_at DateTime  @default(now())
   Article    Article[]
+  role       String   @default("user")
 }
+
+
 
 model Article {
   id                  Int                   @id @default(autoincrement())
